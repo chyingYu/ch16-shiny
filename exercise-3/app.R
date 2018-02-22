@@ -1,17 +1,20 @@
 # Exercise 3: Shiny widgets
 
 # Load the shiny, ggplot2, and dplyr libraries
-
+library("dplyr")
+library("ggplot2")
+library("shiny")
 
 # You will once again be working with the `diamonds` data set provided by ggplot2
 # Use dplyr's `sample_n()` function to get a random 3000 rows from the data set
 # Store this sample in a variable `diamonds.sample`
-
+diamonds.sample <- sample_n(diamonds, 3000)
 
 # For convenience store the `range()` of values for the `price` and `carat` 
 # columns (of the ENTIRE diamonds dataset)
 
-
+price.range <- range(diamonds$price)
+carat.range <- range(diamonds$carat)
 
 # Define a UI using a fluidPage layout
 
@@ -50,7 +53,18 @@
 
 
 # Define a Server function for the app
+#// What are we going to Output?
 
+server <- function(input, ouput){
+  output$plot <- renderPlot({
+   p <- ggplot(data = diamonds.sample) +
+      geom_point(mapping = aes(x = carat, y = price, color = clarity))
+   #// We can refer to the p graph 
+   #// The last value made if we don't use return will be returned. But be explicit.
+   return(p)
+  })
+  
+}
 
   # Assign a reactive `renderPlot()` function to the outputted 'plot' value
 
@@ -80,6 +94,9 @@
 
 
 # Create a new `shinyApp()` using the above ui and server
+
+shinyApp(ui, server)
+
 
 
 ## Double Bonus: For fun, can you make a similar browser for the `mpg` data set?
